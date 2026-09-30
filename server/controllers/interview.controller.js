@@ -1,43 +1,64 @@
 import fs from "fs/promises";
 import path from "path";
+import { fileURLToPath } from "url";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+
+import { deductCredits } from "./user.controller.js";
 
 import Interview from "../models/interview.model.js";
 import askAi from "../services/openRouter.services.js";
 
-const extractPdfText = async (filePath) => {
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+// const standardFontDataUrl = path.join(
+//   __dirname,
+//   "../node_modules/pdfjs-dist/standard_fonts/"
+// );
+pdfjsLib.GlobalWorkerOptions.verbosity = 0;
+      const extractPdfText = async (filePath) => {
+          try {
+            const data = await fs.readFile(filePath);
+
+            const loadingTask = pdfjsLib.getDocument({
+              data: new Uint8Array(data.buffer, data.byteOffset, data.byteLength),
+              useSystemFonts: true, // Use system fonts as fallback
+              disableFontFace: true  // Skip font face compilation in node environment
+            });
+
+        const pdf = await loadingTask.promise;
+            let text = "";
+
+            for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+              const page = await pdf.getPage(pageNumber);
+              const content = await page.getTextContent();
+
+              const pageText = content.items
+                .map((item) => item.str)
+                .join(" ");
+
+              text += pageText + "\n";
+            }
+
+            return text;
+
+          } catch (error) {
+            console.error("PDF extraction detail:", error); // Logs exact underlying error in terminal
+            throw new Error("Failed to read resume PDF");
+          }
+        };
+
+export const analyzeResume = async (req, res) => {
   try {
-    const data = await fs.readFile(filePath);
-
-    const pdf = await pdfjsLib.getDocument({
-      data: new Uint8Array(data)
-    }).promise;
-
-    let text = "";
-
-    for (
-      let pageNumber = 1;
-      pageNumber <= pdf.numPages;
-      pageNumber++
-    ) {
-      const page = await pdf.getPage(pageNumber);
-      const content = await page.getTextContent();
-
-      const pageText = content.items
-        .map((item) => item.str)
-        .join(" ");
-
-      text += pageText + "\n";
-    }
-
-    return text;
+    // Your resume extraction / AI logic here
+    res.status(200).json({
+      role: "Software Engineer",
+      experience: "2 years",
+      projects: ["Project 1", "Project 2"],
+      skills: ["React", "Node.js"],
+      resumeText: "Extracted resume content..."
+    });
   } catch (error) {
-    console.error(
-      "PDF extraction error:",
-      error.message
-    );
-
-    throw new Error("Failed to read resume PDF");
+    res.status(500).json({ message: "Resume analysis failed", error: error.message });
   }
 };
 
@@ -242,59 +263,39 @@ Return ONLY valid JSON.
   }
 };
 
-export const submitAnswer = async (
-  req,
-  res
-) => {
+export const submitAnswer = async (req, res) => {
   try {
-    const {
-      interviewId,
-      questionId,
-      answer
-    } = req.body;
-
+    const { interviewId, questionId, answer } = req.body;
     const userId = req.userId;
 
     if (!userId) {
-      return res.status(401).json({
-        message:
-          "User is not authenticated"
-      });
+      return res.status(401).json({ message: "User is not authenticated" });
     }
 
-    if (
-      !interviewId ||
-      !questionId ||
-      answer === undefined
-    ) {
+    if (!interviewId || !questionId) {
       return res.status(400).json({
-        message:
-          "Interview ID, question ID and answer are required"
+        message: "Interview ID and question ID are required"
       });
     }
 
-    const interview =
-      await Interview.findOne({
-        _id: interviewId,
-        userId
-      });
+    const interview = await Interview.findOne({ _id: interviewId, userId });
 
     if (!interview) {
-      return res.status(404).json({
-        message: "Interview not found"
-      });
+      return res.status(404).json({ message: "Interview not found" });
     }
 
-    const question =
-      interview.questions.id(questionId);
+    // Safely look up question by subdocument ID or array index fallback
+    let question = interview.questions.id(questionId);
+    if (!question) {
+      question = interview.questions.find((q) => q._id?.toString() === questionId || q.id === questionId);
+    }
 
     if (!question) {
-      return res.status(404).json({
-        message: "Question not found"
-      });
+      return res.status(404).json({ message: "Question not found" });
     }
 
-    question.answer = answer;
+    const submittedAnswer = answer || "No answer provided.";
+    question.answer = submittedAnswer;
 
     const prompt = `
 You are an expert technical interviewer.
@@ -305,7 +306,7 @@ Question:
 ${question.question}
 
 Candidate Answer:
-${answer}
+${submittedAnswer}
 
 Return ONLY valid JSON in exactly this format:
 
@@ -316,13 +317,11 @@ Return ONLY valid JSON in exactly this format:
 
 Rules:
 - score must be a number from 0 to 10
-- feedback should briefly explain what was good,
-  what was missing, and how the answer could be improved
+- feedback should briefly explain what was good, what was missing, and how the answer could be improved
 - do not include markdown
 `;
 
     const aiResponse = await askAi(prompt);
-
     let evaluation;
 
     try {
@@ -332,50 +331,28 @@ Rules:
         .trim();
 
       evaluation = JSON.parse(cleanedResponse);
-
     } catch (error) {
-      console.error(
-        "Answer evaluation JSON parsing error:",
-        error.message
-      );
-
-      evaluation = {
-        feedback: aiResponse,
-        score: 0
-      };
+      console.error("Answer evaluation JSON parsing error:", error.message);
+      evaluation = { feedback: aiResponse, score: 0 };
     }
 
-    question.feedback =
-      evaluation.feedback || "";
-
+    question.feedback = evaluation.feedback || "";
     await interview.save();
 
     return res.status(200).json({
-      message:
-        "Answer evaluated successfully",
-
+      message: "Answer evaluated successfully",
       questionId,
-
-      feedback:
-        question.feedback,
-
-      score:
-        Number(evaluation.score) || 0
+      feedback: question.feedback,
+      score: Number(evaluation.score) || 0
     });
-
   } catch (error) {
-    console.error(
-      "Submit answer error:",
-      error
-    );
-
+    console.error("Submit answer error:", error);
     return res.status(500).json({
-      message:
-        error.message ||
-        "Failed to submit answer"
+      message: error.message || "Failed to submit answer"
     });
   }
 };
+
 
 export const generateInterviewReport = async (
   req,
@@ -612,3 +589,4 @@ export const getInterviewReport = async (req, res) => {
     });
   }
 };
+

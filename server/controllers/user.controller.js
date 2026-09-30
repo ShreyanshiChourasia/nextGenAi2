@@ -1,5 +1,16 @@
 import User from "../models/user.model.js";
 
+export const deductCredits = async (userId, amount) => {
+  const user = await User.findById(userId);
+  if (!user || user.credits < amount) {
+    throw new Error("Insufficient credits to start the interview");
+  }
+  user.credits -= amount;
+  await user.save();
+  return user.credits;
+};
+
+
 export const getCurrentUser = async (req, res) => {
   try {
     const userId = req.userId;
