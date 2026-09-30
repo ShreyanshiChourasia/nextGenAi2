@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import AuthModel from '../components/AuthModel';
 import Footer from '../components/Footer';
@@ -15,7 +16,6 @@ import {
 } from "react-icons/bs";
 
 import { HiSparkles } from "react-icons/hi";
-import { ImInsertTemplate } from 'react-icons/im';
 
 import hrImg from "../assets/HR.png";
 import techImg from "../assets/tech.png";
@@ -40,21 +40,15 @@ function Home() {
 
             <div className='flex-1 px-6 py-20'>
 
+                {/* Badge */}
                 <div className='flex justify-center mb-6'>
-
                     <div className='bg-gray-100 text-gray-600 text-sm px-4 py-2 rounded-full flex items-center gap-2'>
-
-                        <HiSparkles
-                            size={16}
-                            className='bg-green-50 text-green-600'
-                        />
-
+                        <HiSparkles size={16} className='bg-green-50 text-green-600' />
                         AI Powered Smart Interview Platform
-
                     </div>
-
                 </div>
 
+                {/* Hero Section */}
                 <div className='text-center mb-28'>
 
                     <motion.h1
@@ -63,19 +57,12 @@ function Home() {
                         transition={{ duration: 0.6 }}
                         className='text-4xl md:text-6xl font-semibold leading-tight max-w-4xl mx-auto'
                     >
-
                         Practice Interviews with
-
                         <span className='relative inline-block'>
-
                             <span className='bg-green-100 text-green-600 px-5 py-1 rounded-full'>
-
                                 AI Intelligence
-
                             </span>
-
                         </span>
-
                     </motion.h1>
 
                     <motion.p
@@ -84,70 +71,61 @@ function Home() {
                         transition={{ duration: 0.8 }}
                         className='text-gray-500 mt-6 max-w-2xl mx-auto text-lg'
                     >
-
                         Role-based mock interviews with smart follow-ups,
-                        adaptive difficulty and real-time performance
-                        evaluation.
-
+                        adaptive difficulty and real-time performance evaluation.
                     </motion.p>
 
+                    {/* BUTTONS */}
                     <div className='flex flex-wrap justify-center gap-4 mt-10'>
 
+                        {/* Start Interview */}
                         <motion.button
                             onClick={() => {
                                 if (!userData) {
                                     setShowAuth(true);
                                     return;
                                 }
-
                                 navigate("/interview");
                             }}
-                            whileHover={{
-                                opacity: 0.9,
-                                scale: 1.03
-                            }}
-                            whileTap={{
-                                opacity: 1,
-                                scale: 0.98
-                            }}
+                            whileHover={{ opacity: 0.9, scale: 1.03 }}
+                            whileTap={{ opacity: 1, scale: 0.98 }}
                             className='bg-black text-white px-10 py-3 rounded-full hover:opacity-90 transition shadow-md'
                         >
-
                             Start Interview
-
                         </motion.button>
 
+                        {/* View History */}
                         <motion.button
                             onClick={() => {
                                 if (!userData) {
                                     setShowAuth(true);
                                     return;
                                 }
-
                                 navigate("/history");
                             }}
-                            whileHover={{
-                                opacity: 0.9,
-                                scale: 1.03
-                            }}
-                            whileTap={{
-                                opacity: 1,
-                                scale: 0.98
-                            }}
+                            whileHover={{ opacity: 0.9, scale: 1.03 }}
+                            whileTap={{ opacity: 1, scale: 0.98 }}
                             className='border border-gray-300 px-10 py-3 rounded-full hover:bg-gray-100 transition'
                         >
-
                             View History
+                        </motion.button>
 
+                        {/* ✅ Buy Coins — YEH NAYA BUTTON HAI */}
+                        <motion.button
+                            onClick={() => navigate("/pricing")}
+                            whileHover={{ opacity: 0.9, scale: 1.03 }}
+                            whileTap={{ opacity: 1, scale: 0.98 }}
+                            className='bg-green-600 text-white px-10 py-3 rounded-full hover:bg-green-700 transition shadow-md'
+                        >
+                            Buy Coins
                         </motion.button>
 
                     </div>
 
                 </div>
 
-
+                {/* Steps Section */}
                 <div className='flex flex-col md:flex-row justify-center items-center gap-10 mb-28'>
-
                     {[
                         {
                             icon: <BsRobot size={24} />,
@@ -168,7 +146,6 @@ function Home() {
                             desc: "Real interview pressure with time tracking."
                         }
                     ].map((item, index) => (
-
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 60 }}
@@ -176,82 +153,41 @@ function Home() {
                             transition={{ duration: 0.6 + index * 0.2 }}
                             whileHover={{ rotate: 0, scale: 1.06 }}
                             className={`
-                                relative
-                                bg-white
-                                rounded-3xl
-                                border-2
-                                border-green-100
-                                hover:border-green-500
-                                p-10
-                                w-80
-                                max-w-[90%]
-                                shadow-md
-                                hover:shadow-2xl
-                                transition-all
-                                duration-300
+                                relative bg-white rounded-3xl border-2 border-green-100
+                                hover:border-green-500 p-10 w-80 max-w-[90%] shadow-md
+                                hover:shadow-2xl transition-all duration-300
                                 ${index === 0 ? "rotate-[-4deg]" : ""}
                                 ${index === 1 ? "rotate-[3deg] md:-mt-6 shadow-xl" : ""}
                                 ${index === 2 ? "rotate-[-3deg]" : ""}
                             `}
                         >
-
                             <div className='absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg bg-white border-2 border-green-500 text-green-600'>
-
                                 {item.icon}
-
                             </div>
-
                             <div className='pt-10 text-center'>
-
                                 <div className='text-green-600 font-semibold mb-2 tracking-wider'>
-
                                     {item.step}
-
                                 </div>
-
-                                <h3 className='font-semibold mb-3 text-lg'>
-
-                                    {item.title}
-
-                                </h3>
-
-                                <p className='text-sm text-gray-500 leading-relaxed'>
-
-                                    {item.desc}
-
-                                </p>
-
+                                <h3 className='font-semibold mb-3 text-lg'>{item.title}</h3>
+                                <p className='text-sm text-gray-500 leading-relaxed'>{item.desc}</p>
                             </div>
-
                         </motion.div>
-
                     ))}
-
                 </div>
 
-
+                {/* Advanced AI Capabilities */}
                 <div className='mb-32'>
-
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                         className='text-4xl font-semibold text-center mb-16'
                     >
-
                         Advanced AI{" "}
-
-                        <span className='text-green-600'>
-
-                            Capabilities
-
-                        </span>
-
+                        <span className='text-green-600'>Capabilities</span>
                     </motion.h2>
 
-
                     <div className='grid md:grid-cols-2 gap-8 max-w-5xl mx-auto'>
-
                         {[
                             {
                                 image: evalImg,
@@ -278,87 +214,44 @@ function Home() {
                                 desc: "Track progress with performance graphs and topic analysis."
                             }
                         ].map((item, index) => (
-
                             <motion.div
                                 key={index}
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
-                                transition={{
-                                    duration: 0.5,
-                                    delay: index * 0.1
-                                }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
                                 whileHover={{ scale: 1.02 }}
                                 className='bg-white border border-gray-200 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all'
                             >
-
                                 <div className='flex flex-col md:flex-row items-center gap-6'>
-
                                     <div className='w-full md:w-1/2 flex justify-center'>
-
-                                        <img
-                                            src={item.image}
-                                            alt={item.title}
-                                            className='w-full h-auto object-contain max-h-52'
-                                        />
-
+                                        <img src={item.image} alt={item.title} className='w-full h-auto object-contain max-h-52' />
                                     </div>
-
-
                                     <div className='w-full md:w-1/2'>
-
                                         <div className='bg-green-50 text-green-600 w-12 h-12 rounded-xl flex items-center justify-center mb-5'>
-
                                             {item.icon}
-
                                         </div>
-
-                                        <h3 className='font-semibold text-xl mb-3'>
-
-                                            {item.title}
-
-                                        </h3>
-
-                                        <p className='text-gray-500 leading-relaxed'>
-
-                                            {item.desc}
-
-                                        </p>
-
+                                        <h3 className='font-semibold text-xl mb-3'>{item.title}</h3>
+                                        <p className='text-gray-500 leading-relaxed'>{item.desc}</p>
                                     </div>
-
                                 </div>
-
                             </motion.div>
-
                         ))}
-
                     </div>
-
                 </div>
 
-
+                {/* Multiple Interview Modes */}
                 <div className='mb-16'>
-
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                         className='text-4xl font-semibold text-center mb-16'
                     >
-
                         Multiple Interview{" "}
-
-                        <span className='text-green-600'>
-
-                            Modes
-
-                        </span>
-
+                        <span className='text-green-600'>Modes</span>
                     </motion.h2>
 
-
                     <div className='grid md:grid-cols-2 gap-8 max-w-5xl mx-auto'>
-
                         {[
                             {
                                 img: hrImg,
@@ -367,7 +260,7 @@ function Home() {
                             },
                             {
                                 img: techImg,
-                                title: "Tecnical Mode",
+                                title: "Technical Mode",
                                 desc: "Deep technical questioning based on selected role."
                             },
                             {
@@ -381,67 +274,32 @@ function Home() {
                                 desc: "Unlock premium interview sessions easily."
                             }
                         ].map((mode, index) => (
-
                             <motion.div
                                 key={index}
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
-                                transition={{
-                                    duration: 0.5,
-                                    delay: index * 0.1
-                                }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
                                 whileHover={{ y: -6 }}
                                 className='bg-white border border-gray-200 rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all'
                             >
-
                                 <div className='flex items-center justify-between gap-6'>
-
                                     <div className='w-1/2'>
-
-                                        <h3 className='font-semibold text-xl mb-3'>
-
-                                            {mode.title}
-
-                                        </h3>
-
-                                        <p className='text-gray-500 text-sm leading-relaxed'>
-
-                                            {mode.desc}
-
-                                        </p>
-
+                                        <h3 className='font-semibold text-xl mb-3'>{mode.title}</h3>
+                                        <p className='text-gray-500 text-sm leading-relaxed'>{mode.desc}</p>
                                     </div>
-
-
                                     <div className='w-1/2 flex justify-end'>
-
-                                        <img
-                                            src={mode.img}
-                                            alt={mode.title}
-                                            className='w-28 h-28 object-contain'
-                                        />
-
+                                        <img src={mode.img} alt={mode.title} className='w-28 h-28 object-contain' />
                                     </div>
-
                                 </div>
-
                             </motion.div>
-
                         ))}
-
                     </div>
-
                 </div>
 
             </div>
 
-
             {showAuth && (
-
-                <AuthModel
-                    onClose={() => setShowAuth(false)}
-                />
-
+                <AuthModel onClose={() => setShowAuth(false)} />
             )}
 
             <Footer />

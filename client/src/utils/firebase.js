@@ -1,3 +1,4 @@
+/*
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
@@ -17,3 +18,5 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 export { auth, provider };
+*/
+export const auth=null;

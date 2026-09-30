@@ -13,7 +13,7 @@ import {
     signInWithPopup
 } from "firebase/auth";
 
-import { auth } from '../utils/firebase';
+//import { auth } from '../utils/firebase';
 
 import axios from 'axios';
 
