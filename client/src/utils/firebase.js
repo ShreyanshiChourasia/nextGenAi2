@@ -1,22 +1,19 @@
-/*
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_APIKEY,
-  authDomain: "nextgenai-7faba.firebaseapp.com",
-  projectId: "nextgenai-7faba",
-  storageBucket: "nextgenai-7faba.firebasestorage.app",
-  messagingSenderId: "784866895321",
-  appId: "1:784866895321:web:b88477a4edf9955bcca5c8"
+  apiKey: "AIzaSyDKEOft4drpiVs2NuCkH96VOIsxuaBPmSE",
+  authDomain: "nextgenai-a7021.firebaseapp.com",
+  projectId: "nextgenai-a7021",
+  storageBucket: "nextgenai-a7021.firebasestorage.app",
+  messagingSenderId: "830149657301",
+  appId: "1:830149657301:web:e8e415a7c1e6c534f8185c",
+  measurementId: "G-QFJJFEKKS4"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
-
-const provider = new GoogleAuthProvider();
-
-export { auth, provider };
-*/
-export const auth=null;
+// ⬇️ MAKE SURE THESE TWO LINES ARE PRESENT AND EXPORTED PROPERLY
+export const auth = getAuth(app);
+export default app;

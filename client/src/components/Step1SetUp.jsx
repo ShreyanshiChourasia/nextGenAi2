@@ -85,64 +85,52 @@ function Step1SetUp({ onStart }) {
 
 
     const handleStart = async () => {
+            setLoading(true);
 
-        setLoading(true)
+            try {
+                const formData = new FormData();
+                
+                // Extract numeric digits from string (e.g., "2 years" -> "2")
+                const numericExperience = experience.replace(/[^0-9.]/g, "");
 
-        try {
+                formData.append("jobRole", role);
+                formData.append("experience", numericExperience || "0"); // Default to "0" if empty
+                formData.append("interviewType", mode);
 
-            console.log("START INTERVIEW DATA:", {
-                role,
-                experience,
-                mode,
-                resumeText,
-                projects,
-                skills
-            })
-
-            const result = await axios.post(
-                ServerUrl + "/api/interview/generate-questions",
-                {
-                    role,
-                    experience,
-                    mode,
-                    resumeText,
-                    projects,
-                    skills
-                },
-                {
-                    withCredentials: true
+                if (resumeFile) {
+                    formData.append("resume", resumeFile);
                 }
-            )
+               
 
-            console.log(result.data)
+                const result = await axios.post(
+                    ServerUrl + "/api/interview/start",
+                    formData,
+                    {
+                        withCredentials: true,
+                        headers: {
+                            "Content-Type": "multipart/form-data"
+                        }
+                    }
+                );
 
-            if (userData) {
-                dispatch(
-                    setUserData({
-                        ...userData,
-                        credits: result.data.creditsLeft
-                    })
-                )
+                if (userData) {
+                    dispatch(
+                        setUserData({
+                            ...userData,
+                            credits: result.data.creditsLeft
+                        })
+                    );
+                }
+
+                setLoading(false);
+                onStart(result.data.interview);
+
+            } catch (error) {
+                console.error("Start interview error:", error);
+                console.log("SERVER RESPONSE:", error.response?.data);
+                setLoading(false);
             }
-
-            setLoading(false)
-
-            onStart(result.data)
-
-        } catch (error) {
-
-            console.log(error)
-
-            console.log(
-                "SERVER RESPONSE:",
-                JSON.stringify(error.response?.data, null, 2)
-            )
-
-            setLoading(false)
-
-        }
-    }
-
+        };
 
     return (
         <motion.div
@@ -307,33 +295,11 @@ function Step1SetUp({ onStart }) {
                                     id='resumeUpload'
                                     accept='.pdf,.doc,.docx'
                                     className='hidden'
-                                    onChange={async (e) => {
+                                   onChange={(e) => {
                                         const file = e.target.files[0];
                                         if (!file) return;
                                         setResumeFile(file);
                                         setAnalysisDone(false);
-                                        
-                                        // Automatically upload & analyze
-                                        setAnalyzing(true);
-                                        try {
-                                            const formdata = new FormData();
-                                            formdata.append("resume", file);
-                                            const result = await axios.post(
-                                                ServerUrl + "/api/interview/resume",
-                                                formdata,
-                                                { withCredentials: true }
-                                            );
-                                            setRole(result.data.role || "");
-                                            setExperience(result.data.experience || "");
-                                            setProjects(result.data.projects || []);
-                                            setSkills(result.data.skills || []);
-                                            setResumeText(result.data.resumeText || "");
-                                            setAnalysisDone(true);
-                                        } catch (error) {
-                                            console.error("RESUME ANALYSIS ERROR:", error);
-                                        } finally {
-                                            setAnalyzing(false);
-                                        }
                                     }}
                                 />
 
