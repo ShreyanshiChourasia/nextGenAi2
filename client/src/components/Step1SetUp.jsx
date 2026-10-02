@@ -127,7 +127,11 @@ function Step1SetUp({ onStart }) {
 
             setLoading(false)
 
-            onStart(result.data)
+            localStorage.setItem("currentInterviewId", result.data.interviewId || `interview_${Date.now()}`);
+onStart({
+    ...result.data,
+    interviewId: result.data.interviewId || localStorage.getItem("currentInterviewId")
+})
 
         } catch (error) {
 
