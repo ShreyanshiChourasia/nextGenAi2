@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import axios from 'axios';
-import { Routes, Route } from 'react-router-dom';
+// import React, { useEffect } from 'react';
+// import axios from 'axios';
+// import { Routes, Route } from 'react-router-dom';
 
 import Home from './pages/Home';
 import Auth from './pages/Auth';
@@ -10,11 +10,11 @@ import InterviewPage from './pages/InterviewPage';
 import { useDispatch } from 'react-redux';
 import { setUserData } from './redux/userSlice';
 
-export const ServerUrl = "http://localhost:8001";
+// export const ServerUrl = "http://localhost:8000";
 
 function App() {
 
-    const dispatch = useDispatch();
+//     const dispatch = useDispatch();
 
     useEffect(() => {
         const getUser = async () => {
