@@ -35,7 +35,7 @@ function InterviewHistory() {
         {/* Header */}
         <div className="mb-10 w-full flex items-start gap-4 flex-wrap">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}
             className="mt-1 p-3 rounded-full bg-white shadow hover:shadow-md transition text-gray-600"
           >
             <FaArrowLeft />

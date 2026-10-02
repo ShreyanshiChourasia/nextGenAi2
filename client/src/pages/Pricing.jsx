@@ -66,11 +66,11 @@ function Pricing() {
         {/* Header */}
         <div className="mb-10">
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/')}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition"
           >
             <FaArrowLeft className="text-gray-600" />
-            <span>Back to Dashboard</span>
+            <span>Back to Homepage</span>
           </button>
 
           <div className="text-center mt-8">
