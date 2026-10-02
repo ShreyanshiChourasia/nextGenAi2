@@ -222,33 +222,47 @@ function Step2Interview({ interviewData, onFinish }) {
                 }
                 setIsMicOn(!isMicOn);
             };
-
             const submitAnswer = async () => {
-                if (isSubmitting) return;
-                stopMic();
-                setIsSubmitting(true);
-            
-            try {
-                const result= await axios.post(
-                    ServerUrl + `/api/interview/${interviewId}/submit-answer`, {
-                        interviewId,
-                        questionIndex: currentIndex,
-                        answer,
-                        timeTaken: currentQuestion.timeLimit - timeLeft
-                    },
-                    {
-                        withCredentials: true
-                    }
-                );
-                setFeedback(result.data.feedback);
-                speakText(result.data.feedback);
-                setIsSubmitting(false);
-            }
-            catch(error) {
-                console.log(error);
-                setIsSubmitting(false);
-            }
-        }
+    if (isSubmitting) return;
+
+    const targetInterviewId = 
+        interviewData?._id || 
+        interviewData?.interviewId || 
+        interviewData?.interview?.id || 
+        interviewData?.interview?._id||
+        localStorage.getItem("currentInterviewId");
+
+    const targetQuestionId = 
+        currentQuestion?._id || 
+        currentQuestion?.id;
+
+    if (!targetInterviewId || !targetQuestionId) {
+        console.error("Missing IDs:", { targetInterviewId, targetQuestionId });
+        return;
+    }
+
+    stopMic();
+    setIsSubmitting(true);
+
+    try {
+        const result = await axios.post(
+            ServerUrl + "/api/interview/answer",
+            {
+                interviewId: targetInterviewId,
+                questionId: targetQuestionId,
+                answer: answer || ""
+            },
+            { withCredentials: true }
+        );
+
+        setFeedback(result.data.feedback);
+        speakText(result.data.feedback);
+        setIsSubmitting(false);
+    } catch (error) {
+        console.error("Submit error:", error.response?.data || error.message);
+        setIsSubmitting(false);
+    }
+};
         const handleNext = async () => {
             setAnswer("");
             setFeedback("");
